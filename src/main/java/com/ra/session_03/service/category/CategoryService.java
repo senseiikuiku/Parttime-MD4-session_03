@@ -3,6 +3,8 @@ package com.ra.session_03.service.category;
 import com.ra.session_03.model.dto.category.CategoryRequestDTO;
 import com.ra.session_03.model.dto.category.CategoryResponseDTO;
 import com.ra.session_03.model.dto.category.CategoryUpdateRequestDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -12,5 +14,7 @@ public interface CategoryService {
     CategoryResponseDTO findById(Long id);
     CategoryResponseDTO update(CategoryUpdateRequestDTO categoryUpdateRequestDTO);
     void delete(Long id);
+//    Phân trang
+    Page<CategoryResponseDTO> paginate(Pageable pageable);
 
 }

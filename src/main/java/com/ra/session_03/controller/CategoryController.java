@@ -3,8 +3,14 @@ package com.ra.session_03.controller;
 import com.ra.session_03.model.dto.category.CategoryRequestDTO;
 import com.ra.session_03.model.dto.category.CategoryResponseDTO;
 import com.ra.session_03.model.dto.category.CategoryUpdateRequestDTO;
+import com.ra.session_03.model.dto.product.ProductResponseDTO;
 import com.ra.session_03.service.category.CategoryService;
+import com.ra.session_03.service.product.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,10 +28,27 @@ public class CategoryController {
         this.categoryService = categoryService;
     }
 
+//    @GetMapping
+//    public ResponseEntity<List<CategoryResponseDTO>> index() {
+//        List<CategoryResponseDTO> responseDTOS = categoryService.findAll();
+//        return new ResponseEntity<>(responseDTOS, HttpStatus.OK);
+//    }
+
+//    Danh sách có phân trang
     @GetMapping
-    public ResponseEntity<List<CategoryResponseDTO>> index() {
-        List<CategoryResponseDTO> responseDTOS = categoryService.findAll();
-        return new ResponseEntity<>(responseDTOS, HttpStatus.OK);
+    public ResponseEntity<?> index(@RequestParam(defaultValue = "0",name="page")int page,
+                                   @RequestParam(defaultValue = "3",name = "limit") int limit,
+                                   @RequestParam(defaultValue = "ASC",name = "order") String sort,
+                                   @RequestParam(defaultValue = "id",name = "sortBy") String sortBy){
+
+        Pageable pageable;
+        if(sort.equalsIgnoreCase("asc")){
+            pageable = PageRequest.of(page, limit, Sort.by(sortBy).ascending());
+        }else {
+            pageable = PageRequest.of(page, limit, Sort.by(sortBy).descending());
+        }
+        Page<CategoryResponseDTO> categoryResponseDTOS = categoryService.paginate(pageable);
+        return new ResponseEntity<>(categoryResponseDTOS, HttpStatus.OK);
     }
 
     @PostMapping
@@ -41,7 +64,8 @@ public class CategoryController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CategoryResponseDTO> update(@PathVariable Long id, @RequestBody CategoryUpdateRequestDTO categoryUpdateRequestDTO) {
+    public ResponseEntity<CategoryResponseDTO> update(@PathVariable Long id,
+                                                      @RequestBody CategoryUpdateRequestDTO categoryUpdateRequestDTO) {
         categoryUpdateRequestDTO.setId(id);
         CategoryResponseDTO responseDTO = categoryService.update(categoryUpdateRequestDTO);
         return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
@@ -52,4 +76,6 @@ public class CategoryController {
         categoryService.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+
 }

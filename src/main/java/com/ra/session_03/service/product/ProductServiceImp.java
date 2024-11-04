@@ -43,4 +43,18 @@ public class ProductServiceImp implements ProductService {
         }
         return productResponseDTOs;
     }
+
+    @Override
+    public List<ProductResponseDTO> searchByProductName(String keyWord) {
+        List<Product> products = productRepository.searchByName(keyWord);
+        return products.stream().map(product->{
+                ProductResponseDTO responseDTO = new ProductResponseDTO();
+                responseDTO.setId(product.getId());
+                responseDTO.setProductName(product.getProductName());
+                responseDTO.setPrice(product.getPrice());
+                responseDTO.setImage(product.getImage());
+                responseDTO.setCategory(product.getCategory());
+                return responseDTO;
+        }).toList();
+    }
 }

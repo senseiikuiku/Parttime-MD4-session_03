@@ -6,6 +6,9 @@ import com.ra.session_03.model.dto.category.CategoryUpdateRequestDTO;
 import com.ra.session_03.model.entity.Category;
 import com.ra.session_03.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -83,5 +86,19 @@ public class CategoryServiceImp implements CategoryService {
     @Override
     public void delete(Long id) {
         categoryRepository.deleteById(id);
+    }
+
+    @Override
+    public Page<CategoryResponseDTO> paginate(Pageable pageable) {
+        Page<Category> categories = categoryRepository.findAll(pageable);
+        Page<CategoryResponseDTO> categoryResponseDTOS= categories
+                .map(category -> {
+                    CategoryResponseDTO responseDTO = new CategoryResponseDTO();
+                    responseDTO.setId(category.getId());
+                    responseDTO.setCategoryName(category.getCategoryName());
+                    responseDTO.setCategoryStatus(category.getCategoryStatus());
+                    return responseDTO;
+                });
+        return categoryResponseDTOS;
     }
 }

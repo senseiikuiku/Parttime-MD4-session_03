@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface ProductService {
     List<ProductResponseDTO> findAll();
+    List<ProductResponseDTO> searchByProductName(String keyWord);
 }
